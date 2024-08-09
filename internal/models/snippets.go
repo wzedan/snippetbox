@@ -18,7 +18,7 @@ type SnippetModel struct {
 	DB *sql.DB
 }
 
-// This will insert a new snippet into the database.
+// Insert This will insert a new snippet into the database.
 func (m *SnippetModel) Insert(title string, content string, expires int) (int, error) {
 	stmt := "INSERT INTO snippets (title, content, created, expires) VALUES (? , ?, datetime('now'), date(date('now'), ?));"
 	rs, err := m.DB.Exec(stmt, title, content, fmt.Sprintf("+%d days", expires))
@@ -58,15 +58,23 @@ func (m *SnippetModel) Latest() ([]*Snippet, error) {
 		" WHERE expires > datetime('now') order by created desc limit 10;"
 
 	rows, err := m.DB.Query(stmt)
-	defer rows.Close()
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+			return
+		}
+	}(rows)
 
 	if err != nil {
 		return nil, err
 	}
-	snippets := []*Snippet{}
+	var snippets []*Snippet
 	for rows.Next() {
 		s := &Snippet{}
-		rows.Scan(&s.ID, &s.Title, &s.Content, &s.Created, &s.Expires)
+		err := rows.Scan(&s.ID, &s.Title, &s.Content, &s.Created, &s.Expires)
+		if err != nil {
+			return nil, err
+		}
 		snippets = append(snippets, s)
 	}
 	if err = rows.Err(); err != nil {
