@@ -43,6 +43,7 @@ func (app *Application) snippetView(w http.ResponseWriter, r *http.Request) {
 		} else {
 			app.serverError(w, err)
 		}
+
 		return
 	}
 

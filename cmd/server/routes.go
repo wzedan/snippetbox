@@ -11,5 +11,6 @@ func (app *Application) buildMux() *http.ServeMux {
 	mux.HandleFunc("/", app.home)
 	mux.HandleFunc("/create", app.snippetCreate)
 	mux.HandleFunc("/view", app.snippetView)
+
 	return mux
 }

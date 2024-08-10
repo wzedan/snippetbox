@@ -22,4 +22,5 @@ func (app *Application) clientError(w http.ResponseWriter, status int) {
 // convenience wrapper around clientError which sends a 404 Not Found response to // the user.
 func (app *Application) notFound(w http.ResponseWriter) {
 	app.clientError(w, http.StatusNotFound)
+
 }
